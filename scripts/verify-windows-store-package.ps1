@@ -99,7 +99,16 @@ try {
     $application.GetAttribute("Executable") -replace "\\", "/"
   ) -replace "^[\\/]+", ""
   if ($archivePaths -notcontains $applicationExecutable) {
-    throw "Declared application executable is missing from the package: $applicationExecutable"
+    $packagedExecutables = @(
+      $archivePaths |
+        Where-Object { $_ -match "\.exe$" } |
+        Select-Object -First 20
+    )
+    throw (
+      "Declared application executable is missing from the package: " +
+      "$applicationExecutable. Packaged executables: " +
+      ($packagedExecutables -join ", ")
+    )
   }
 
   $bridgePath = "app/resources/bin/whatsapp-bridge.exe"
