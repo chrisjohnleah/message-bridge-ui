@@ -21,6 +21,7 @@
     "build": "npm run build:bridge && npm run build:main && vite build",
     "dist": "npm run notices && npm run build && electron-builder",
     "notices": "node scripts/generate-third-party-notices.mjs",
+    "upstream:check": "node scripts/check-upstream.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.main.json --noEmit"

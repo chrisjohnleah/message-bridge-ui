@@ -90,6 +90,11 @@ It uses `whatsmeow` (MPL-2.0) and `libsignal` (GPL-3.0).
 See [NOTICE](NOTICE), [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md), and the
 full texts under [LICENSES](LICENSES).
 
+The exact bundled bridge revision is recorded in
+[`third_party/whatsapp-mcp/UPSTREAM.json`](third_party/whatsapp-mcp/UPSTREAM.json).
+Upstream is checked weekly; see
+[`docs/UPSTREAM.md`](docs/UPSTREAM.md) for the reviewed update process.
+
 ## Licence
 
 Message Bridge is distributed under **GPL-3.0-only**. Individual third-party
