@@ -27,3 +27,29 @@ jobs:
       - run: npm test
       - run: go test ./...
         working-directory: third_party/whatsapp-mcp
+
+  windows-store-package:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: third_party/whatsapp-mcp/go.mod
+          cache-dependency-path: third_party/whatsapp-mcp/go.sum
+      - run: npm ci
+      - run: npm run notices
+      - run: npm run build
+      - run: npx electron-builder --win appx --x64 --publish never
+      - name: Verify Microsoft Store package
+        shell: pwsh
+        run: |
+          $packages = @(Get-ChildItem release/Message-Bridge-*-x64.appx)
+          if ($packages.Count -ne 1) {
+            throw "Expected one x64 AppX package, found $($packages.Count)"
+          }
+          scripts/verify-windows-store-package.ps1 -PackagePath $packages[0].FullName

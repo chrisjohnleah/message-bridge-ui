@@ -101,8 +101,15 @@
     "win": {
       "icon": "resources/icons/icon.png",
       "target": [
-        "nsis"
+        "appx"
       ]
+    },
+    "appx": {
+      "applicationId": "MessageBridge",
+      "identityName": "HappyWebs.MessageBridge",
+      "publisher": "CN=4D83A70F-1C90-4ECF-B70B-11A526955C12",
+      "publisherDisplayName": "Happy Webs",
+      "displayName": "Message Bridge"
     },
     "linux": {
       "category": "Office",

@@ -1,15 +1,19 @@
 # Releasing Message Bridge
 
-The release workflow builds the macOS Apple Silicon, macOS Intel, and Windows
-x64 artifacts from a version tag. macOS artifacts must be signed with a
-Developer ID Application certificate issued to the approved legal publisher,
-Happy Webs Limited (Apple team `59HH2JHF3G`), and notarized by Apple before
-GitHub Actions will upload them.
+The release workflow builds macOS Apple Silicon, macOS Intel, and Windows x64
+artifacts from a version tag. macOS artifacts must be signed with a Developer
+ID Application certificate issued to the approved legal publisher, Happy Webs
+Limited (Apple team `59HH2JHF3G`), and notarized by Apple. Windows is packaged
+for Microsoft Store, where Microsoft signs and delivers the package under the
+verified publisher “Happy Webs”.
 
 Happy Webs Limited is the certificate publisher only. The product remains
 branded “Message Bridge”; do not add Happy Webs product branding, accounts,
 subscriptions, or proprietary licensing. Do not use a development, Mac App
 Store distribution, ad-hoc, or different company identity.
+
+Unsigned Windows installers must not be attached to GitHub Releases. GitHub
+Releases contain only the notarized macOS artifacts and their checksums.
 
 ## macOS credentials
 
@@ -34,6 +38,36 @@ base64 -i AuthKey_KEYID.p8 | tr -d '\n'
 ```
 
 Never commit certificates, private keys, passwords, or decoded credentials.
+
+## Windows Store credentials
+
+Message Bridge has the following Microsoft Store identity:
+
+- Store product ID: `9PBD74ZRV6ZT`
+- Package identity name: `HappyWebs.MessageBridge`
+- Package publisher: `CN=4D83A70F-1C90-4ECF-B70B-11A526955C12`
+- Publisher display name: `Happy Webs`
+
+Configure a dedicated Microsoft Entra application with only the Partner Center
+permissions needed to update Message Bridge. Do not use an interactive user
+password or grant unrelated product access. Configure these GitHub Actions
+repository secrets:
+
+- `PARTNER_CENTER_TENANT_ID`
+- `PARTNER_CENTER_SELLER_ID`
+- `PARTNER_CENTER_CLIENT_ID`
+- `PARTNER_CENTER_CLIENT_SECRET`
+
+The client secret is a CI credential. Store it only in GitHub Actions encrypted
+secrets, set an expiry and rotation reminder, and revoke it immediately if it
+is exposed. Never put it in workflow YAML, shell history, release notes, or the
+repository.
+
+The Windows job builds an AppX package, extracts it, and checks the reserved
+Store identity, verified publisher, application name, executable declaration,
+and bundled bridge. It then submits the package using Microsoft's Store
+Developer CLI. The GitHub release job does not run unless Store submission
+succeeds.
 
 ## Release checks
 
@@ -63,6 +97,6 @@ The macOS jobs additionally mount each DMG and require:
 - a stapled Apple notarization ticket
 - a successful Gatekeeper assessment
 
-If credentials are absent, signing is incomplete, notarization fails, or
-Gatekeeper rejects the app, the workflow fails before any release artifact is
-uploaded.
+If signing credentials are absent, signing is incomplete, notarization fails,
+Gatekeeper rejects the app, the AppX identity is wrong, or Microsoft Store
+submission fails, the workflow fails without publishing a GitHub release.

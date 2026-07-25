@@ -31,20 +31,23 @@ do not rely on it for emergency or regulated communications.
 
 ## Download
 
-The first installers are available from
-[GitHub Releases](https://github.com/chrisjohnleah/message-bridge-ui/releases/latest):
+Release downloads are distributed through:
 
-- macOS for Apple Silicon and Intel
-- Windows 64-bit
+- [GitHub Releases](https://github.com/chrisjohnleah/message-bridge-ui/releases/latest)
+  for signed and Apple-notarized macOS builds (Apple Silicon and Intel)
+- the Microsoft Store for Windows 64-bit builds, signed and delivered by
+  Microsoft under the verified publisher “Happy Webs”
 
 The macOS artifacts in v0.1.0 were published without a complete Developer ID
 signature or Apple notarization. Current macOS versions may therefore report
 that the app is damaged even though its checksum is valid. This is a known
 release defect; use a later signed and notarized release when one is available.
-Windows may show an unverified-publisher warning.
+The v0.1.0 Windows installer is also unsigned and may show an
+unverified-publisher warning; use a later Microsoft Store release when one is
+available.
 
-Always verify a download against the published `SHA256SUMS.txt` and proceed
-only if you trust this repository and its source.
+For GitHub downloads, always verify the file against the published
+`SHA256SUMS.txt`. Proceed only if you trust this repository and its source.
 
 ## Development
 
@@ -102,7 +105,8 @@ Upstream is checked weekly; see
 
 Release maintainers should also follow
 [`docs/RELEASING.md`](docs/RELEASING.md) so macOS artifacts are signed,
-notarized, and Gatekeeper-tested before publication.
+notarized, and Gatekeeper-tested, while Windows packages are identity-checked
+and submitted to Microsoft Store signing before publication.
 
 ## Licence
 
