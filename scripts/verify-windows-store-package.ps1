@@ -86,9 +86,8 @@ try {
     throw "Application executable is missing from AppxManifest.xml"
   }
 
-  $applicationPath = Join-Path $extractRoot $application.GetAttribute(
-    "Executable"
-  )
+  $applicationExecutable = $application.GetAttribute("Executable")
+  $applicationPath = Join-Path -Path $extractRoot -ChildPath $applicationExecutable
   if (-not (Test-Path -LiteralPath $applicationPath -PathType Leaf)) {
     throw "Declared application executable is missing from the package"
   }
