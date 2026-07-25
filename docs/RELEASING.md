@@ -48,15 +48,17 @@ profile.
 Use GitHub OpenID Connect rather than a client secret. The Azure app
 registration or managed identity needs only the **Artifact Signing Certificate
 Profile Signer** role scoped to the Message Bridge certificate profile. Its
-federated credential must be restricted to this repository's release tags.
+federated credential must trust only the `release-signing` GitHub environment.
+Configure that environment to accept protected version tags matching
+`v*.*.*`; do not allow arbitrary branches or tags to use the signing identity.
 
-Configure these GitHub Actions repository secrets:
+Configure these GitHub Actions `release-signing` environment secrets:
 
 - `AZURE_CLIENT_ID`
 - `AZURE_TENANT_ID`
 - `AZURE_SUBSCRIPTION_ID`
 
-Configure these repository variables:
+Configure these `release-signing` environment variables:
 
 - `AZURE_ARTIFACT_SIGNING_ENDPOINT`
 - `AZURE_ARTIFACT_SIGNING_ACCOUNT`
