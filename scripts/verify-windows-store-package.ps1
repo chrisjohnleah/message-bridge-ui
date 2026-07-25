@@ -87,9 +87,14 @@ try {
   }
 
   $applicationExecutable = $application.GetAttribute("Executable")
-  $applicationPath = Join-Path -Path $extractRoot -ChildPath $applicationExecutable
+  $applicationPath = $extractRoot
+  foreach ($pathSegment in ($applicationExecutable -split "[\\/]")) {
+    if (-not [string]::IsNullOrWhiteSpace($pathSegment)) {
+      $applicationPath = Join-Path -Path $applicationPath -ChildPath $pathSegment
+    }
+  }
   if (-not (Test-Path -LiteralPath $applicationPath -PathType Leaf)) {
-    throw "Declared application executable is missing from the package"
+    throw "Declared application executable is missing from the package: $applicationExecutable"
   }
 
   $bridgePath = Join-Path $extractRoot "app/resources/bin/whatsapp-bridge.exe"
