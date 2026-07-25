@@ -17,22 +17,31 @@ if ([System.IO.Path]::GetExtension($resolvedPackage) -ne ".appx") {
   throw "Expected an .appx package, received: $resolvedPackage"
 }
 
-$extractRoot = Join-Path ([System.IO.Path]::GetTempPath()) (
-  "message-bridge-appx-" + [System.Guid]::NewGuid().ToString("N")
-)
+$packageArchive = [System.IO.Compression.ZipFile]::OpenRead($resolvedPackage)
 
 try {
-  [System.IO.Compression.ZipFile]::ExtractToDirectory($resolvedPackage, $extractRoot)
+  $archivePaths = @(
+    $packageArchive.Entries | ForEach-Object {
+      ($_.FullName -replace "\\", "/") -replace "^[\\/]+", ""
+    }
+  )
 
-  $manifestPath = Join-Path $extractRoot "AppxManifest.xml"
-  if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) {
+  $manifestEntry = $packageArchive.Entries |
+    Where-Object { $_.FullName -ieq "AppxManifest.xml" } |
+    Select-Object -First 1
+  if ($null -eq $manifestEntry) {
     throw "AppxManifest.xml is missing from the package"
   }
 
   $manifestDocument = New-Object System.Xml.XmlDocument
   $manifestDocument.PreserveWhitespace = $true
   $manifestDocument.XmlResolver = $null
-  $manifestDocument.Load($manifestPath)
+  $manifestStream = $manifestEntry.Open()
+  try {
+    $manifestDocument.Load($manifestStream)
+  } finally {
+    $manifestStream.Dispose()
+  }
 
   $namespaceManager = New-Object System.Xml.XmlNamespaceManager(
     $manifestDocument.NameTable
@@ -86,19 +95,15 @@ try {
     throw "Application executable is missing from AppxManifest.xml"
   }
 
-  $applicationExecutable = $application.GetAttribute("Executable")
-  $applicationPath = $extractRoot
-  foreach ($pathSegment in ($applicationExecutable -split "[\\/]")) {
-    if (-not [string]::IsNullOrWhiteSpace($pathSegment)) {
-      $applicationPath = Join-Path -Path $applicationPath -ChildPath $pathSegment
-    }
-  }
-  if (-not (Test-Path -LiteralPath $applicationPath -PathType Leaf)) {
+  $applicationExecutable = (
+    $application.GetAttribute("Executable") -replace "\\", "/"
+  ) -replace "^[\\/]+", ""
+  if ($archivePaths -notcontains $applicationExecutable) {
     throw "Declared application executable is missing from the package: $applicationExecutable"
   }
 
-  $bridgePath = Join-Path $extractRoot "app/resources/bin/whatsapp-bridge.exe"
-  if (-not (Test-Path -LiteralPath $bridgePath -PathType Leaf)) {
+  $bridgePath = "app/resources/bin/whatsapp-bridge.exe"
+  if ($archivePaths -notcontains $bridgePath) {
     throw "Bundled WhatsApp bridge executable is missing from the package"
   }
 
@@ -107,7 +112,5 @@ try {
   Write-Host "  $expectedIdentityName"
   Write-Host "  $expectedPublisher"
 } finally {
-  if (Test-Path -LiteralPath $extractRoot) {
-    Remove-Item -LiteralPath $extractRoot -Recurse -Force
-  }
+  $packageArchive.Dispose()
 }
