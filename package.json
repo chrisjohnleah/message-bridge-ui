@@ -1,6 +1,6 @@
 {
   "name": "message-bridge-ui",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Free, open-source desktop UI for a local messaging bridge.",
   "author": "Christopher Leah",
@@ -89,6 +89,9 @@
       "category": "public.app-category.business",
       "icon": "resources/icons/icon.png",
       "hardenedRuntime": true,
+      "entitlements": "resources/entitlements.mac.plist",
+      "entitlementsInherit": "resources/entitlements.mac.inherit.plist",
+      "notarize": true,
       "gatekeeperAssess": false,
       "target": [
         "dmg",
@@ -98,8 +101,15 @@
     "win": {
       "icon": "resources/icons/icon.png",
       "target": [
-        "nsis"
+        "appx"
       ]
+    },
+    "appx": {
+      "applicationId": "MessageBridge",
+      "identityName": "HappyWebs.MessageBridge",
+      "publisher": "CN=4D83A70F-1C90-4ECF-B70B-11A526955C12",
+      "publisherDisplayName": "Happy Webs",
+      "displayName": "Message Bridge"
     },
     "linux": {
       "category": "Office",
