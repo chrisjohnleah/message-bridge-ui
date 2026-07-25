@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Message Bridge</title>
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="#F5F2EA"/>
+  <path d="M136 150v212M376 150v212" fill="none" stroke="#3659D9" stroke-width="44" stroke-linecap="round"/>
+  <path d="M136 256h240" fill="none" stroke="#3659D9" stroke-width="38" stroke-linecap="round"/>
+  <circle cx="136" cy="150" r="18" fill="#E8A52B"/>
+  <circle cx="376" cy="362" r="18" fill="#E8A52B"/>
+</svg>

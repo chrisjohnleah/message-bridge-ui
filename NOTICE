@@ -1,0 +1,15 @@
+Message Bridge
+Copyright (C) 2026 Christopher Leah
+
+This distribution contains software derived from whatsapp-mcp:
+Copyright (c) 2024 Luke Harries
+Later modifications were published by Very Good Plugins.
+
+The whatsapp-mcp source is provided under the MIT License. The bundled Go
+bridge also depends on whatsmeow under MPL-2.0 and libsignal under GPL-3.0.
+Full licence texts and additional notices are supplied in LICENSES/ and
+THIRD_PARTY_NOTICES.md.
+
+WhatsApp and Meta are trademarks of their respective owners. This project is
+not affiliated with, endorsed by, or sponsored by WhatsApp LLC or Meta
+Platforms, Inc.
