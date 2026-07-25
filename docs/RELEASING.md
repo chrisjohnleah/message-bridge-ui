@@ -2,12 +2,14 @@
 
 The release workflow builds the macOS Apple Silicon, macOS Intel, and Windows
 x64 artifacts from a version tag. macOS artifacts must be signed with a
-Developer ID Application certificate issued for Message Bridge's maintainer
-and notarized by Apple before GitHub Actions will upload them.
+Developer ID Application certificate issued to the approved legal publisher,
+Happy Webs Limited (Apple team `59HH2JHF3G`), and notarized by Apple before
+GitHub Actions will upload them.
 
-Do not use a development, Mac App Store distribution, ad-hoc, or unrelated
-company identity. A release certificate may identify the maintainer, but it
-must not introduce unrelated product branding.
+Happy Webs Limited is the certificate publisher only. The product remains
+branded “Message Bridge”; do not add Happy Webs product branding, accounts,
+subscriptions, or proprietary licensing. Do not use a development, Mac App
+Store distribution, ad-hoc, or different company identity.
 
 ## macOS credentials
 
@@ -55,7 +57,8 @@ The macOS jobs additionally mount each DMG and require:
 
 - a structurally valid disk image
 - a strict, complete code signature
-- a Developer ID Application signing authority
+- the approved Happy Webs Limited Developer ID Application signing authority
+- Apple team identifier `59HH2JHF3G`
 - a signed bundled Go bridge
 - a stapled Apple notarization ticket
 - a successful Gatekeeper assessment

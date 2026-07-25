@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+expected_authority="Developer ID Application: Happy Webs Limited (59HH2JHF3G)"
+expected_team_id="59HH2JHF3G"
+
 if (( $# == 0 )); then
   echo "Usage: $0 <release.dmg> [release.dmg ...]" >&2
   exit 2
@@ -44,12 +47,12 @@ for dmg_path in "$@"; do
 
   codesign --verify --deep --strict --verbose=2 "${app_path}"
   signature_details="$(codesign --display --verbose=4 "${app_path}" 2>&1)"
-  if ! grep -q '^Authority=Developer ID Application:' <<< "${signature_details}"; then
-    echo "App is not signed with a Developer ID Application certificate" >&2
+  if ! grep -Fqx "Authority=${expected_authority}" <<< "${signature_details}"; then
+    echo "App is not signed by the approved publisher: ${expected_authority}" >&2
     exit 1
   fi
-  if grep -Eiq '^Authority=Developer ID Application:.*Happy[[:space:]]*Webs' <<< "${signature_details}"; then
-    echo "App is signed with the unrelated Happy Webs identity" >&2
+  if ! grep -Fqx "TeamIdentifier=${expected_team_id}" <<< "${signature_details}"; then
+    echo "App signature does not use the approved Apple team: ${expected_team_id}" >&2
     exit 1
   fi
 
