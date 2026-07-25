@@ -133,6 +133,7 @@ jobs:
     needs: verify
     runs-on: windows-latest
     timeout-minutes: 45
+    environment: release-signing
     permissions:
       contents: read
       id-token: write
