@@ -29,6 +29,18 @@ This is an early community project. It is suitable for development and
 evaluation, not a promise of uninterrupted service. Back up important data and
 do not rely on it for emergency or regulated communications.
 
+## Download
+
+The first installers are available from
+[GitHub Releases](https://github.com/chrisjohnleah/message-bridge-ui/releases/latest):
+
+- macOS for Apple Silicon and Intel
+- Windows 64-bit
+
+The builds are not yet code-signed or notarized, so your operating system will
+show an unverified-publisher warning. Verify the download against the published
+`SHA256SUMS.txt` and proceed only if you trust this repository and its source.
+
 ## Development
 
 Prerequisites:
