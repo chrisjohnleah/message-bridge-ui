@@ -3,17 +3,16 @@
 The release workflow builds macOS Apple Silicon, macOS Intel, and Windows x64
 artifacts from a version tag. macOS artifacts must be signed with a Developer
 ID Application certificate issued to the approved legal publisher, Happy Webs
-Limited (Apple team `59HH2JHF3G`), and notarized by Apple. Windows is packaged
-for Microsoft Store, where Microsoft signs and delivers the package under the
-verified publisher “Happy Webs”.
+Limited (Apple team `59HH2JHF3G`), and notarized by Apple. Windows application
+binaries and the NSIS installer must be Authenticode-signed under the verified
+publisher Happy Webs Limited using Azure Artifact Signing.
 
 Happy Webs Limited is the certificate publisher only. The product remains
 branded “Message Bridge”; do not add Happy Webs product branding, accounts,
 subscriptions, or proprietary licensing. Do not use a development, Mac App
 Store distribution, ad-hoc, or different company identity.
 
-Unsigned Windows installers must not be attached to GitHub Releases. GitHub
-Releases contain only the notarized macOS artifacts and their checksums.
+Unsigned Windows installers must not be attached to GitHub Releases.
 
 ## macOS credentials
 
@@ -39,35 +38,38 @@ base64 -i AuthKey_KEYID.p8 | tr -d '\n'
 
 Never commit certificates, private keys, passwords, or decoded credentials.
 
-## Windows Store credentials
+## Windows credentials
 
-Message Bridge has the following Microsoft Store identity:
+Direct Windows downloads use Azure Artifact Signing's Public Trust model.
+Configure a Basic Artifact Signing account, complete organisation identity
+validation for Happy Webs Limited, and create one Public Trust certificate
+profile.
 
-- Store product ID: `9PBD74ZRV6ZT`
-- Package identity name: `HappyWebs.MessageBridge`
-- Package publisher: `CN=4D83A70F-1C90-4ECF-B70B-11A526955C12`
-- Publisher display name: `Happy Webs`
+Use GitHub OpenID Connect rather than a client secret. The Azure app
+registration or managed identity needs only the **Artifact Signing Certificate
+Profile Signer** role scoped to the Message Bridge certificate profile. Its
+federated credential must be restricted to this repository's release tags.
 
-Configure a dedicated Microsoft Entra application with only the Partner Center
-permissions needed to update Message Bridge. Do not use an interactive user
-password or grant unrelated product access. Configure these GitHub Actions
-repository secrets:
+Configure these GitHub Actions repository secrets:
 
-- `PARTNER_CENTER_TENANT_ID`
-- `PARTNER_CENTER_SELLER_ID`
-- `PARTNER_CENTER_CLIENT_ID`
-- `PARTNER_CENTER_CLIENT_SECRET`
+- `AZURE_CLIENT_ID`
+- `AZURE_TENANT_ID`
+- `AZURE_SUBSCRIPTION_ID`
 
-The client secret is a CI credential. Store it only in GitHub Actions encrypted
-secrets, set an expiry and rotation reminder, and revoke it immediately if it
-is exposed. Never put it in workflow YAML, shell history, release notes, or the
-repository.
+Configure these repository variables:
 
-The Windows job builds an AppX package, inspects its archive entries, and checks
-the reserved Store identity, verified publisher, application name, executable
-declaration, and bundled bridge. It then submits the package using Microsoft's
-Store Developer CLI. The GitHub release job does not run unless Store
-submission succeeds.
+- `AZURE_ARTIFACT_SIGNING_ENDPOINT`
+- `AZURE_ARTIFACT_SIGNING_ACCOUNT`
+- `AZURE_ARTIFACT_SIGNING_PROFILE`
+
+The Windows job builds an unpacked application, signs the Message Bridge and
+bundled Go bridge executables, creates the NSIS installer from that signed
+application, then signs and timestamps the installer. It verifies every
+project-owned executable and the installer before uploading the installer.
+The GitHub release job does not run unless all Windows signatures are valid.
+
+Artifact Signing certificates are short-lived, so RFC 3161 timestamping is
+mandatory. No private signing key or client secret is stored in GitHub.
 
 ## Release checks
 
@@ -97,6 +99,13 @@ The macOS jobs additionally mount each DMG and require:
 - a stapled Apple notarization ticket
 - a successful Gatekeeper assessment
 
-If signing credentials are absent, signing is incomplete, notarization fails,
-Gatekeeper rejects the app, the AppX identity is wrong, or Microsoft Store
-submission fails, the workflow fails without publishing a GitHub release.
+The Windows job additionally requires:
+
+- valid Authenticode signatures on `Message Bridge.exe`,
+  `whatsapp-bridge.exe`, and the downloadable NSIS installer
+- a Happy Webs Limited signer identity
+- an RFC 3161 timestamp on every signature
+
+If signing configuration is absent, any signature is invalid, notarization
+fails, or an operating-system trust check fails, the workflow stops without
+publishing a GitHub release.

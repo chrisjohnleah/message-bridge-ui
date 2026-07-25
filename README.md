@@ -31,23 +31,22 @@ do not rely on it for emergency or regulated communications.
 
 ## Download
 
-Release downloads are distributed through:
+Release downloads are distributed through
+[GitHub Releases](https://github.com/chrisjohnleah/message-bridge-ui/releases/latest):
 
-- [GitHub Releases](https://github.com/chrisjohnleah/message-bridge-ui/releases/latest)
-  for signed and Apple-notarized macOS builds (Apple Silicon and Intel)
-- the [Microsoft Store](https://apps.microsoft.com/detail/9PBD74ZRV6ZT) for
-  Windows 64-bit builds, signed and delivered by Microsoft under the verified
-  publisher “Happy Webs”
+- signed and Apple-notarized macOS builds for Apple Silicon and Intel
+- an Authenticode-signed Windows 64-bit installer
 
 The macOS artifacts in v0.1.0 were published without a complete Developer ID
 signature or Apple notarization. Current macOS versions may therefore report
 that the app is damaged even though its checksum is valid. This is a known
 release defect; use v0.1.1 or later. The v0.1.0 Windows installer is also
-unsigned and may show an unverified-publisher warning; install v0.1.1 or later
-from the Microsoft Store instead.
+unsigned and may show an unverified-publisher warning; use the signed installer
+from v0.1.1 or later instead.
 
-For GitHub downloads, always verify the file against the published
-`SHA256SUMS.txt`. Proceed only if you trust this repository and its source.
+Always verify a download against the release's `SHA256SUMS.txt`. Windows
+installers should report **Happy Webs Limited** as the verified publisher.
+Proceed only if you trust this repository and its source.
 
 ## Development
 
@@ -105,8 +104,8 @@ Upstream is checked weekly; see
 
 Release maintainers should also follow
 [`docs/RELEASING.md`](docs/RELEASING.md) so macOS artifacts are signed,
-notarized, and Gatekeeper-tested, while Windows packages are identity-checked
-and submitted to Microsoft Store signing before publication.
+notarized, and Gatekeeper-tested, while Windows application binaries and the
+installer are Authenticode-signed and verified before publication.
 
 ## Licence
 

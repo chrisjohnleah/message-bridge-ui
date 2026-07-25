@@ -101,15 +101,15 @@
     "win": {
       "icon": "resources/icons/icon.png",
       "target": [
-        "appx"
+        "nsis"
       ]
     },
-    "appx": {
-      "applicationId": "MessageBridge",
-      "identityName": "HappyWebs.MessageBridge",
-      "publisher": "CN=4D83A70F-1C90-4ECF-B70B-11A526955C12",
-      "publisherDisplayName": "Happy Webs",
-      "displayName": "Message Bridge"
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Message Bridge"
     },
     "linux": {
       "category": "Office",
