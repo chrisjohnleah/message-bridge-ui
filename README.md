@@ -37,9 +37,14 @@ The first installers are available from
 - macOS for Apple Silicon and Intel
 - Windows 64-bit
 
-The builds are not yet code-signed or notarized, so your operating system will
-show an unverified-publisher warning. Verify the download against the published
-`SHA256SUMS.txt` and proceed only if you trust this repository and its source.
+The macOS artifacts in v0.1.0 were published without a complete Developer ID
+signature or Apple notarization. Current macOS versions may therefore report
+that the app is damaged even though its checksum is valid. This is a known
+release defect; use a later signed and notarized release when one is available.
+Windows may show an unverified-publisher warning.
+
+Always verify a download against the published `SHA256SUMS.txt` and proceed
+only if you trust this repository and its source.
 
 ## Development
 
@@ -94,6 +99,10 @@ The exact bundled bridge revision is recorded in
 [`third_party/whatsapp-mcp/UPSTREAM.json`](third_party/whatsapp-mcp/UPSTREAM.json).
 Upstream is checked weekly; see
 [`docs/UPSTREAM.md`](docs/UPSTREAM.md) for the reviewed update process.
+
+Release maintainers should also follow
+[`docs/RELEASING.md`](docs/RELEASING.md) so macOS artifacts are signed,
+notarized, and Gatekeeper-tested before publication.
 
 ## Licence
 

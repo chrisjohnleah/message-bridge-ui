@@ -89,6 +89,9 @@
       "category": "public.app-category.business",
       "icon": "resources/icons/icon.png",
       "hardenedRuntime": true,
+      "entitlements": "resources/entitlements.mac.plist",
+      "entitlementsInherit": "resources/entitlements.mac.inherit.plist",
+      "notarize": true,
       "gatekeeperAssess": false,
       "target": [
         "dmg",

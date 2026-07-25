@@ -10,6 +10,7 @@ are welcome.
 4. Preserve upstream copyright, licence texts, and third-party notices.
 5. Follow `docs/UPSTREAM.md` when changing the vendored bridge.
 6. Run `npm run typecheck`, `npm test`, the Go tests, and `npm run build`.
+7. Follow `docs/RELEASING.md` before creating a release tag.
 
 By contributing, you agree that your contribution may be distributed under
 GPL-3.0-only and compatible third-party licences where applicable.

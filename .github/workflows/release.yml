@@ -22,6 +22,16 @@ jobs:
         with:
           go-version-file: third_party/whatsapp-mcp/go.mod
           cache-dependency-path: third_party/whatsapp-mcp/go.sum
+      - name: Verify release metadata
+        shell: bash
+        run: |
+          package_version="$(node -p "require('./package.json').version")"
+          tag_version="${GITHUB_REF_NAME#v}"
+          if [[ "${package_version}" != "${tag_version}" ]]; then
+            echo "package.json version ${package_version} does not match tag ${GITHUB_REF_NAME}" >&2
+            exit 1
+          fi
+          test -f "docs/releases/${GITHUB_REF_NAME}.md"
       - run: npm ci
       - run: npm run notices
       - run: npm run typecheck
@@ -70,10 +80,49 @@ jobs:
       - run: npm ci
       - run: npm run notices
       - run: npm run build
+      - name: Prepare macOS release credentials
+        if: runner.os == 'macOS'
+        shell: bash
+        env:
+          MACOS_CSC_LINK: ${{ secrets.MACOS_CSC_LINK }}
+          MACOS_CSC_KEY_PASSWORD: ${{ secrets.MACOS_CSC_KEY_PASSWORD }}
+          APPLE_API_KEY_P8_BASE64: ${{ secrets.APPLE_API_KEY_P8_BASE64 }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+        run: |
+          missing=()
+          for name in \
+            MACOS_CSC_LINK \
+            MACOS_CSC_KEY_PASSWORD \
+            APPLE_API_KEY_P8_BASE64 \
+            APPLE_API_KEY_ID \
+            APPLE_API_ISSUER
+          do
+            if [[ -z "${!name:-}" ]]; then
+              missing+=("$name")
+            fi
+          done
+
+          if (( ${#missing[@]} > 0 )); then
+            echo "Missing required macOS release secrets: ${missing[*]}" >&2
+            exit 1
+          fi
+
+          api_key_path="${RUNNER_TEMP}/AuthKey_${APPLE_API_KEY_ID}.p8"
+          printf '%s' "${APPLE_API_KEY_P8_BASE64}" | base64 -D > "${api_key_path}"
+          chmod 600 "${api_key_path}"
+          echo "APPLE_API_KEY=${api_key_path}" >> "${GITHUB_ENV}"
       - name: Package application
         run: npx electron-builder ${{ matrix.builder_args }}
         env:
-          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+          CSC_LINK: ${{ secrets.MACOS_CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.MACOS_CSC_KEY_PASSWORD }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+      - name: Verify macOS signature and notarization
+        if: runner.os == 'macOS'
+        shell: bash
+        run: scripts/verify-macos-release.sh release/Message-Bridge-*.dmg
       - uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.artifact }}
@@ -106,4 +155,4 @@ jobs:
           --repo "${GITHUB_REPOSITORY}"
           --verify-tag
           --title "Message Bridge ${GITHUB_REF_NAME}"
-          --notes-file docs/releases/v0.1.0.md
+          --notes-file "docs/releases/${GITHUB_REF_NAME}.md"
