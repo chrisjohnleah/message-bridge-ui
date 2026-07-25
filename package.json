@@ -1,6 +1,6 @@
 {
   "name": "message-bridge-ui",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Free, open-source desktop UI for a local messaging bridge.",
   "author": "Christopher Leah",

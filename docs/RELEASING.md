@@ -63,11 +63,11 @@ secrets, set an expiry and rotation reminder, and revoke it immediately if it
 is exposed. Never put it in workflow YAML, shell history, release notes, or the
 repository.
 
-The Windows job builds an AppX package, extracts it, and checks the reserved
-Store identity, verified publisher, application name, executable declaration,
-and bundled bridge. It then submits the package using Microsoft's Store
-Developer CLI. The GitHub release job does not run unless Store submission
-succeeds.
+The Windows job builds an AppX package, inspects its archive entries, and checks
+the reserved Store identity, verified publisher, application name, executable
+declaration, and bundled bridge. It then submits the package using Microsoft's
+Store Developer CLI. The GitHub release job does not run unless Store
+submission succeeds.
 
 ## Release checks
 
