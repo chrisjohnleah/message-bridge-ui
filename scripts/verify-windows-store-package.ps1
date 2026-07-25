@@ -22,7 +22,8 @@ $packageArchive = [System.IO.Compression.ZipFile]::OpenRead($resolvedPackage)
 try {
   $archivePaths = @(
     $packageArchive.Entries | ForEach-Object {
-      ($_.FullName -replace "\\", "/") -replace "^[\\/]+", ""
+      $entryPath = ($_.FullName -replace "\\", "/") -replace "^[\\/]+", ""
+      [System.Uri]::UnescapeDataString($entryPath)
     }
   )
 
