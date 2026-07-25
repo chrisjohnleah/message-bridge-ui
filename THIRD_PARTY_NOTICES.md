@@ -9,6 +9,7 @@ packages.
 
 - Upstream: https://github.com/lharries/whatsapp-mcp
 - Downstream source: https://github.com/verygoodplugins/whatsapp-mcp
+- Bundled downstream revision: `e5f1a9aef5c78198ad27d52d40d4513d3b7e0e2f`
 - Original author: Luke Harries
 - Licence: MIT
 - Bundled source: `third_party/whatsapp-mcp/`

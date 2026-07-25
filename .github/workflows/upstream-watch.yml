@@ -1,0 +1,50 @@
+name: Upstream bridge watch
+
+on:
+  schedule:
+    - cron: "17 8 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Compare recorded and current upstream revisions
+        id: upstream
+        run: node scripts/check-upstream.mjs
+
+      - name: Open an upstream update issue
+        if: steps.upstream.outputs.update_available == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TRACKED_COMMIT: ${{ steps.upstream.outputs.tracked_commit }}
+          LATEST_COMMIT: ${{ steps.upstream.outputs.latest_commit }}
+          UPSTREAM_REPOSITORY: ${{ steps.upstream.outputs.repository }}
+        run: |
+          existing_issue="$(gh issue list \
+            --state open \
+            --search '"Upstream bridge update available" in:title' \
+            --json number \
+            --jq '.[0].number // empty')"
+
+          if [ -n "$existing_issue" ]; then
+            echo "Issue #$existing_issue already tracks the pending update."
+            exit 0
+          fi
+
+          body="$(printf '%s\n\n%s `%s`\n%s `%s`\n\n%s\n' \
+            'The vendored Go bridge has fallen behind its configured upstream branch.' \
+            '- Currently recorded:' "$TRACKED_COMMIT" \
+            '- Latest upstream:' "$LATEST_COMMIT" \
+            'Review and port the upstream bridge changes using `docs/UPSTREAM.md`. Preserve the desktop API and pairing-state integrations, run the full test suite, and update `UPSTREAM.json` only after the changes are applied.')"
+
+          gh issue create \
+            --title "Upstream bridge update available" \
+            --body "$body"
